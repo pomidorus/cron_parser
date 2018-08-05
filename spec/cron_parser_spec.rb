@@ -46,5 +46,23 @@ describe CronParser do
         expect(parser.command).to eq('/usr/bin/find')
       end
     end
+
+    context 'when string contains */' do
+      let(:string) { '*/15 2 3 4 5 /usr/bin/find' }
+
+      it 'parse the correct minute' do
+        parser.parse
+        expect(parser.minute).to eq([0, 15, 30, 45])
+      end
+    end
+
+    context 'when string contains ,' do
+      let(:string) { '1 2 1,15 4 5 /usr/bin/find' }
+
+      it 'parse the correct minute' do
+        parser.parse
+        expect(parser.day_of_month).to eq([1, 15])
+      end
+    end
   end
 end
