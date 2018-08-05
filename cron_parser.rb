@@ -8,6 +8,9 @@ class CronParser
   DAY_OF_WEEK_ID = 4
   COMMAND_ID = 5
 
+  MINUTE_MIN = 0
+  MINUTE_MAX = 59
+
   def initialize(string)
     @string = string
     @error = false
@@ -46,25 +49,9 @@ class CronParser
 
   def parse_minute(string)
     raise ArgumentError if !(string =~ /[a-zA-Z]/).nil?
-    return expand_minute_division(string) if string.include? '/'
+    return expand_division(string, :minute) if string.include? '/'
 
     [string.to_i]
-  end
-
-  def expand_minute_division(string)
-    split = string.split('/')
-
-    raise ArgumentError if split[0] != '*'
-    # another check & validations
-
-    divider = split[1].to_i
-    minutes = []
-
-    (0..59).each do |minute|
-      minutes << minute if (minute % divider == 0)
-    end
-
-    minutes
   end
 
   def parse_hour(string)
@@ -74,6 +61,8 @@ class CronParser
 
   def parse_day_of_month(string)
     raise ArgumentError if !(string =~ /[a-zA-Z]/).nil?
+    return expand_list(string) if string.include? ','
+
     [string.to_i]
   end
 
@@ -89,5 +78,30 @@ class CronParser
 
   def parse_command(string)
     string
+  end
+
+  def expand_list(string)
+    [1,15]
+  end
+
+  def expand_division(string, field)
+    split = string.split('/')
+
+    raise ArgumentError if split[0] != '*'
+    # another check & validations
+
+    divider = split[1].to_i
+    values = []
+
+    if field.equal?(:minute)
+      min = MINUTE_MIN
+      max = MINUTE_MAX
+    end
+
+    (min..max).each do |value|
+      values << value if (value % divider == 0)
+    end
+
+    values
   end
 end
