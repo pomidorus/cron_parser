@@ -59,7 +59,16 @@ describe CronParser do
     context 'when string contains ,' do
       let(:string) { '1 2 1,15 4 5 /usr/bin/find' }
 
-      it 'parse the correct minute' do
+      it 'parse the correct day_of_month' do
+        parser.parse
+        expect(parser.day_of_month).to eq([1, 15])
+      end
+    end
+
+    context 'when string contains , with invalid number' do
+      let(:string) { '1 2 1,15,46 4 5 /usr/bin/find' }
+
+      it 'parse the correct day_of_month' do
         parser.parse
         expect(parser.day_of_month).to eq([1, 15])
       end

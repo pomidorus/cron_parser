@@ -11,6 +11,9 @@ class CronParser
   MINUTE_MIN = 0
   MINUTE_MAX = 59
 
+  DAY_OF_MONTH_MIN = 0
+  DAY_OF_MONTH_MAX = 31
+
   def initialize(string)
     @string = string
     @error = false
@@ -61,7 +64,7 @@ class CronParser
 
   def parse_day_of_month(string)
     raise ArgumentError if !(string =~ /[a-zA-Z]/).nil?
-    return expand_list(string) if string.include? ','
+    return expand_list(string, :day_of_month) if string.include? ','
 
     [string.to_i]
   end
@@ -80,8 +83,15 @@ class CronParser
     string
   end
 
-  def expand_list(string)
-    [1,15]
+  def expand_list(string, field)
+    split = string.split(',')
+
+    if field.equal?(:day_of_month)
+      min = DAY_OF_MONTH_MIN
+      max = DAY_OF_MONTH_MAX
+    end
+
+    split.map{|e| e.to_i}.select{|e| (min..max) === e }
   end
 
   def expand_division(string, field)
