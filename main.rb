@@ -6,11 +6,11 @@ if ARGV.length == 0
     Something goes wrong
   )
 else
-  parser = CronParser.new(ARGV[0])
+  parser = CronParser.new(ARGV.join(' '))
   parser.parse
 
   printer = ParserPrinter.new(parser)
-  printer.print
+  puts printer.print
 
   # parser = CronParser.new(ARGV[0], ParserPrinter.new)
   # parser.parse
