@@ -14,6 +14,12 @@ class CronParser
   DAY_OF_MONTH_MIN = 0
   DAY_OF_MONTH_MAX = 31
 
+  MONTH_MIN = 1
+  MONTH_MAX = 12
+
+  DAY_OF_WEEK_MIN = 1
+  DAY_OF_WEEK_MAX = 7
+
   def initialize(string)
     @string = string
     @error = false
@@ -71,16 +77,49 @@ class CronParser
 
   def parse_month(string)
     raise ArgumentError if !(string =~ /[a-zA-Z]/).nil?
+    return expand_all(string, :month) if string.include? '*'
+
     [string.to_i]
   end
 
   def parse_day_of_week(string)
     raise ArgumentError if !(string =~ /[a-zA-Z]/).nil?
+    return expand_range(string, :day_of_week) if string.include? '-'
+
     [string.to_i]
   end
 
   def parse_command(string)
     string
+  end
+
+  def expand_range(string, field)
+    split = string.split('-')
+    raise ArgumentError if split.size > 2
+
+    raw_min = split[0].to_i
+    raw_max = split[1].to_i
+
+    if field.equal?(:day_of_week)
+      min = DAY_OF_WEEK_MIN
+      max = DAY_OF_WEEK_MAX
+    end
+
+    min = (min..max) === raw_min ? raw_min : min
+    max = (min..max) === raw_max ? raw_max : max
+
+    (min..max).to_a
+  end
+
+  def expand_all(string, field)
+    raise ArgumentError if string != '*'
+
+    if field.equal?(:month)
+      min = MONTH_MIN
+      max = MONTH_MAX
+    end
+
+    (MONTH_MIN..MONTH_MAX).to_a
   end
 
   def expand_list(string, field)
@@ -100,18 +139,16 @@ class CronParser
     raise ArgumentError if split[0] != '*'
     # another check & validations
 
-    divider = split[1].to_i
-    values = []
-
     if field.equal?(:minute)
       min = MINUTE_MIN
       max = MINUTE_MAX
     end
 
+    divider = split[1].to_i
+    values = []
     (min..max).each do |value|
       values << value if (value % divider == 0)
     end
-
     values
   end
 end
