@@ -23,6 +23,13 @@ class CronParser
   def initialize(string)
     @string = string
     @error = false
+
+    @minute = []
+    @hour = []
+    @day_of_month = []
+    @month = []
+    @day_of_week = []
+    @command = ''
   end
 
   def parse
