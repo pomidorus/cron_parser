@@ -122,7 +122,7 @@ class CronParser
       max = MONTH_MAX
     end
 
-    (MONTH_MIN..MONTH_MAX).to_a
+    (min..max).to_a
   end
 
   def expand_list(string, field)
