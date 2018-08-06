@@ -113,7 +113,7 @@ class CronParser
 
   # Expand values of the field if we get * in param
   # will show all available values for this field
-  # (string, string) -> [array of int]
+  # (string, string) -> [int]
   def expand_all(string, field)
     raise ArgumentError if string != '*'
 
